@@ -1,6 +1,7 @@
 import numpy as np
 from mido import MidiFile
 import librosa as lr
+from math import ceil, floor
 
 def to_piano_roll(midi):
     """Convert MIDI file to a 2D NumPy ndarray (notes, timesteps)."""
@@ -21,9 +22,13 @@ def to_piano_roll(midi):
         else:
             continue
     piano_roll = np.array(sequence).T
-    return piano_roll
+    return piano_roll.reshape(piano_roll.shape[1], piano_roll.shape[0])
 
-def split_dataset(data, segment_length):
-    n_equal = data.shape[1] // segment_length
-    return np.array_split(data, n_equal, axis=1)
-
+def group_list(l, group_size):
+    """
+    :param l:           list
+    :param group_size:  size of each group
+    :return:            Yields successive group-sized lists from l.
+    """
+    for i in range(0, len(l), group_size):
+        yield l[i:i+group_size]
